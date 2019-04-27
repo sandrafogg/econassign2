@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 #Load Packages
 library(ggplot2)
+library(tidyverse)
 ```
 
 
@@ -35,28 +36,43 @@ demand_high_lm
 demand_low_lm <- lm(Price_Dollars ~ gas_df$Q_Low_Gallons_per_Day, data = gas_df)
 demand_low_lm
 
-#Make equations
-demand_eq_high <- function(q) {23.3914418-0.0001297*q}
-demand_eq_low <- function(q) {21.9908534-0.0001355*q}
-
 #Set Coefficients
 demand_high_lm$coefficients
 bh = demand_high_lm$coefficients[1]
-mh = demand_high_lm$coefficients[2]
+mh = abs(demand_high_lm$coefficients[2])
 
 demand_low_lm$coefficients
 bl = demand_low_lm$coefficients[1]
-ml = demand_low_lm$coefficients[2]
+ml = abs(demand_low_lm$coefficients[2])
+
+#Make Demand Curves
+  
+demand_eq_high <- function(q) {23.3914418-0.0001297*q}
+demand_eq_low <- function(q) {21.9908534-0.0001355*q}
+
+d_highq <- function(p) {(bh/mh) - (p/mh)}
+d_lowq <- function(p) {(bl/ml) - (p/ml)}
+
+#Find aggregate demand
+q_aggregate = d_highq(5) + d_lowq(5)
+
+q_aggregate
 
 #find aggregate demand
 agg_slope= ((1/mh)+(1/ml))
+agg_slope
 agg_intercept = ((bh/mh)+(bl/ml))
+agg_intercept
 #price = (Q+agg_intercept)/agg_slope
+price = function(q) {(q+agg_intercept)/agg_slope}
+Qagg = ((agg_slope)*5)-agg_intercept
+
+QmeetsS = ((-342674*5)/-15091.38)
+QmeetsS
 
 
-
-
-
-
+demand_gph <- ggplot(data.frame(x = c(0, 500000)), aes(x = q)) +
+        stat_function(fun = demand_eq_high())
+demand_gph
 ```
 
