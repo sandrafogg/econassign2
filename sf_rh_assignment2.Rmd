@@ -46,9 +46,15 @@ mh = demand_high_lm$coefficients[2]
 
 demand_low_lm$coefficients
 bl = demand_low_lm$coefficients[1]
-mh = demand_low_lm$coefficients[2]
+ml = demand_low_lm$coefficients[2]
 
 #find aggregate demand
+agg_slope= ((1/mh)+(1/ml))
+agg_intercept = ((bh/mh)+(bl/ml))
+#price = (Q+agg_intercept)/agg_slope
+
+
+
 
 
 
