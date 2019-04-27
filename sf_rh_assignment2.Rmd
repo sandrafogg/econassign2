@@ -1,0 +1,56 @@
+---
+title: "Assignment2"
+author: "Sandra Fogg"
+date: "4/25/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Load Packages
+library(ggplot2)
+```
+
+
+```{r}
+#Create a data frame
+gas_df <- read_csv("Gas_Data.csv")
+gas_df
+```
+
+```{r}
+#Create demand curve for High and Low
+demand_high <- ggplot(gas_df, aes(x = Q_Low_Gallons_per_Day, y = Price_Dollars)) + 
+  geom_line(color = "#0073D9", size = 1) + 
+  theme_classic() 
+demand_high
+
+#Create a linear regression
+demand_high_lm <- lm(Price_Dollars ~ gas_df$Q_High_Gallons_per_Day, data = gas_df)
+demand_high_lm
+
+demand_low_lm <- lm(Price_Dollars ~ gas_df$Q_Low_Gallons_per_Day, data = gas_df)
+demand_low_lm
+
+#Make equations
+demand_eq_high <- function(q) {23.3914418-0.0001297*q}
+demand_eq_low <- function(q) {21.9908534-0.0001355*q}
+
+#Set Coefficients
+demand_high_lm$coefficients
+bh = demand_high_lm$coefficients[1]
+mh = demand_high_lm$coefficients[2]
+
+demand_low_lm$coefficients
+bl = demand_low_lm$coefficients[1]
+mh = demand_low_lm$coefficients[2]
+
+#find aggregate demand
+
+
+
+```
+
