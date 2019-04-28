@@ -9,25 +9,29 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, include = FALSE}
 #Load Packages
 library(ggplot2)
 library(tidyverse)
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 #Create a data frame
 gas_df <- read_csv("Gas_Data.csv")
 gas_df
 ```
+###Create and graph demand curves, supply curve, and marginal external cost
+```{r, echo=FALSE}
 
-```{r}
+
 #Create demand curve for High and Low
 demand_high <- ggplot(gas_df, aes(x = Q_Low_Gallons_per_Day, y = Price_Dollars)) + 
   geom_line(color = "#0073D9", size = 1) + 
   theme_classic() 
 demand_high
+
+
 
 #Create a linear regression
 demand_high_lm <- lm(Price_Dollars ~ gas_df$Q_High_Gallons_per_Day, data = gas_df)
@@ -36,43 +40,222 @@ demand_high_lm
 demand_low_lm <- lm(Price_Dollars ~ gas_df$Q_Low_Gallons_per_Day, data = gas_df)
 demand_low_lm
 
+
+
 #Set Coefficients
+
+#High Demand Coefficients
 demand_high_lm$coefficients
 bh = demand_high_lm$coefficients[1]
-mh = abs(demand_high_lm$coefficients[2])
+mh = (demand_high_lm$coefficients[2])
 
+#High Demand Equation
+#ph = bh - mh(q)
+#ph = 23.3914418-0.0001297(q)
+
+qhighA <- (1/mh) # 1/slope or m for high income
+qhighB <- (bh/-mh) # intercept or b/ - slope or m for high income
+
+#Low Demand Coefficients
 demand_low_lm$coefficients
 bl = demand_low_lm$coefficients[1]
-ml = abs(demand_low_lm$coefficients[2])
+ml = (demand_low_lm$coefficients[2])
+
+#Low Demand Equation
+#pl = bl - ml(q)
+#pl = 21.9908534-0.0001355(q)
+
+qlowA <- (1/ml) # 1/slope or m for low income
+qlowB <- (bl/-mh) # intercept or b/ - slope or m for low income
+
+
 
 #Make Demand Curves
-  
 demand_eq_high <- function(q) {23.3914418-0.0001297*q}
 demand_eq_low <- function(q) {21.9908534-0.0001355*q}
 
-d_highq <- function(p) {(bh/mh) - (p/mh)}
-d_lowq <- function(p) {(bl/ml) - (p/ml)}
-
-#Find aggregate demand
-q_aggregate = d_highq(5) + d_lowq(5)
-
-q_aggregate
-
-#find aggregate demand
-agg_slope= ((1/mh)+(1/ml))
-agg_slope
-agg_intercept = ((bh/mh)+(bl/ml))
-agg_intercept
-#price = (Q+agg_intercept)/agg_slope
-price = function(q) {(q+agg_intercept)/agg_slope}
-Qagg = ((agg_slope)*5)-agg_intercept
-
-QmeetsS = ((-342674*5)/-15091.38)
-QmeetsS
 
 
-demand_gph <- ggplot(data.frame(x = c(0, 500000)), aes(x = q)) +
-        stat_function(fun = demand_eq_high())
+#Find aggregate demands separately for quantity
+Q_aggb<- qlowB + qhighB # aggregate for intercept
+Q_aggm<- qlowA + qhighA # aggregate for slope
+
+
+
+#Find aggregate demand separately for price
+P_aggb<- -Q_aggb/Q_aggm # aggregate for intercept
+P_aggm<- 1/Q_aggm # aggregate for slope
+
+
+
+# Find aggregate demand curve
+q_aggregate <- function(q){P_aggb+P_aggm*q}
+
+
+
+#Find MPC (supply curve) by plugging in 5 for the aggregate demand curve
+supply<- 5/((5-P_aggb)/P_aggm)
+supply
+
+
+
+# Find marginal external cost
+mec <- function(y) {2}
+
+
+
+# List out functions
+demand_eq_highgph <- function(q) {23.3914418-0.0001297*q}
+demand_eq_lowgph <- function(q) {21.9908534-0.0001355*q}
+mpcgph <- function(q) {supply*q}
+mecgph <- function(y) {2}
+q_aggregategph <- function(q){P_aggb+P_aggm*q}
+
+
+
+# Set up data frame to optimum point
+opt<- data.frame(x = c(0:267217.1), y = c(5))
+x<- 70000:500000
+demand_gph <- ggplot(data.frame(x = c(70000:400000)), aes(x=x))+
+  stat_function(fun=mpcgph, geom = "line", color ="darkolivegreen3") +
+  stat_function(fun=demand_eq_highgph, geom="line", color ="red3") +
+  stat_function(fun=demand_eq_lowgph, geom="line", color ="goldenrod1") +
+  stat_function(fun=q_aggregategph, geom = "line", color ="darkorange3") +
+  stat_function(fun=mecgph, geom = "line", color ="chartreuse4") +
+  xlab("\nQuantity (Gallons per Day)")+
+  ylab("Price ($USD)\n")+
+  ggtitle("Gas Market Under the Status Quo \n")+
+  scale_y_continuous(limits = c(0,25), expand = c(0,0))+
+  scale_x_continuous(limits = c(0,400000), expand = c(0,0), breaks = seq(0, 400000, 50000)) +
+  theme_classic()
+
 demand_gph
+```
+
+###Calculate the consumer benefits
+```{r}
+#Determine the aggregate consumer benefit
+
+#Determine the market equilibrium point, when aggregate demand = supply
+#At equilibrium: p = $5.00, q = 267217.062558
+
+#equation is 
+#Q = 267217.062558
+#Y intercept of agg demand
+demand_agg(0) #22.70661
+#Create a function for agg demand at the equilibrium point
+demand_agg2<- function(x){P_agg2+P_agg1*x - 5}
+#Find the area under the curve via integrating
+agg_cs <- integrate(demand_agg2, 0, 267217.062558)
+agg_cs #2365754
+#Double check the area using shapes
+agg_height <- 22.70661 - 5
+agg_base <- 267217.062558
+agg_cs <- (1/2)*agg_base*agg_height #2365754.1560 WOOOOOO THEYRE EQUAL 
+
+```
+
+
+```{r, echo=FALSE}
+#Question 2
+
+#Create a linear regression
+demand_high_lmt <- lm(Price_Dollars ~ gas_df$Q_High_Gallons_per_Day, data = gas_df)
+demand_high_lmt
+
+demand_low_lmt <- lm(Price_Dollars ~ gas_df$Q_Low_Gallons_per_Day, data = gas_df)
+demand_low_lmt
+
+
+
+#Set Coefficients
+
+#High Demand Coefficients
+demand_high_lm$coefficients
+bht = demand_high_lmt$coefficients[1]
+mht = (demand_high_lmt$coefficients[2])
+
+#High Demand Equation
+#ph = bh - mh(q)
+#ph = 23.3914418-0.0001297(q)
+
+qhighAt <- (1/mht) # 1/slope or m for high income
+qhighBt <- (bht/-mht) # intercept or b/ - slope or m for high income
+
+#Low Demand Coefficients
+demand_low_lmt$coefficients
+blt = demand_low_lmt$coefficients[1]
+mlt = (demand_low_lmt$coefficients[2])
+
+#Low Demand Equation
+#pl = bl - ml(q)
+#pl = 21.9908534-0.0001355(q)
+
+qlowAt <- (1/mlt) # 1/slope or m for low income
+qlowBt <- (blt/-mht) # intercept or b/ - slope or m for low income
+
+
+
+#Make Demand Curves
+demand_eq_hight <- function(q) {23.3914418-0.0001297*q}
+demand_eq_lowt <- function(q) {21.9908534-0.0001355*q}
+
+
+
+#Find aggregate demands separately for quantity
+Q_aggbt<- qlowBt + qhighBt # aggregate for intercept
+Q_aggmt<- qlowAt + qhighAt # aggregate for slope
+
+
+
+#Find aggregate demand separately for price
+P_aggbt<- -Q_aggbt/Q_aggmt # aggregate for intercept
+P_aggmt<- 1/Q_aggmt # aggregate for slope
+
+
+
+# Find aggregate demand curve
+q_aggregatet <- function(q){P_aggbt+P_aggm*qt}
+
+
+
+#Find MPC (supply curve) by plugging in 5 for the aggregate demand curve
+supplyt<- 5.50/((5.50-P_aggbt)/P_aggmt)
+supplyt
+
+
+
+# Find marginal external cost
+mect <- function(y) {2}
+
+
+
+# List out functions
+demand_eq_highgpht <- function(q) {23.3914418-0.0001297*q}
+demand_eq_lowgpht <- function(q) {21.9908534-0.0001355*q}
+mpcgpht <- function(q) {supplyt*q}
+mecgpht <- function(y) {2}
+q_aggregategpht <- function(q){P_aggbt+P_aggmt*q}
+
+
+
+# Set up data frame to optimum point
+opt<- data.frame(x = c(0:267217.1), y = c(5))
+x<- 70000:500000
+demand_gpht <- ggplot(data.frame(x = c(70000:400000)), aes(x=x))+
+  stat_function(fun=mpcgpht, geom = "line", color ="darkolivegreen3") +
+  stat_function(fun=demand_eq_highgpht, geom="line", color ="red3") +
+  stat_function(fun=demand_eq_lowgpht, geom="line", color ="goldenrod1") +
+  stat_function(fun=q_aggregategpht, geom = "line", color ="darkorange3") +
+  stat_function(fun=mecgpht, geom = "line", color ="chartreuse4") +
+  xlab("\nQuantity (Gallons per Day)")+
+  ylab("Price ($USD)\n")+
+  ggtitle("Gas Market Under with a $0.50 Tax \n")+
+  scale_y_continuous(limits = c(0,25), expand = c(0,0))+
+  scale_x_continuous(limits = c(0,400000), expand = c(0,0), breaks = seq(0, 400000, 50000)) +
+  theme_classic()
+
+demand_gpht
+
 ```
 
