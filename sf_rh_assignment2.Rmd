@@ -66,7 +66,7 @@ ml = (demand_low_lm$coefficients[2])
 #pl = 21.9908534-0.0001355(q)
 
 qlowA <- (1/ml) # 1/slope or m for low income
-qlowB <- (bl/-mh) # intercept or b/ - slope or m for low income
+qlowB <- (bl/-ml) # intercept or b/ - slope or m for low income
 
 
 
@@ -84,7 +84,9 @@ Q_aggm<- qlowA + qhighA # aggregate for slope
 
 #Find aggregate demand separately for price
 P_aggb<- -Q_aggb/Q_aggm # aggregate for intercept
+P_aggb
 P_aggm<- 1/Q_aggm # aggregate for slope
+P_aggm
 
 
 
@@ -93,7 +95,7 @@ q_aggregate <- function(q){P_aggb+P_aggm*q}
 
 
 
-#Find MPC (supply curve) by plugging in 5 for the aggregate demand curve
+#Find MPC (supply curve) with price, $5.00
 supply<- 5/((5-P_aggb)/P_aggm)
 supply
 
@@ -113,7 +115,7 @@ q_aggregategph <- function(q){P_aggb+P_aggm*q}
 
 
 
-# Set up data frame to optimum point
+# Graph curves
 opt<- data.frame(x = c(0:267217.1), y = c(5))
 x<- 70000:500000
 demand_gph <- ggplot(data.frame(x = c(70000:400000)), aes(x=x))+
@@ -138,26 +140,107 @@ demand_gph
 
 #Determine the market equilibrium point, when aggregate demand = supply
 #At equilibrium: p = $5.00, q = 267217.062558
+### 
 
-#equation is 
+#Aggregate equation =
 #Q = 267217.062558
 #Y intercept of agg demand
-demand_agg(0) #22.70661
-#Create a function for agg demand at the equilibrium point
-demand_agg2<- function(x){P_agg2+P_agg1*x - 5}
-#Find the area under the curve via integrating
-agg_cs <- integrate(demand_agg2, 0, 267217.062558)
-agg_cs #2365754
+q_aggregategph(0)
+# = 22.70661
+
+
 #Double check the area using shapes
-agg_height <- 22.70661 - 5
-agg_base <- 267217.062558
-agg_cs <- (1/2)*agg_base*agg_height #2365754.1560 WOOOOOO THEYRE EQUAL 
+agg_height_cs <- 22.70661 - 5
+agg_base_cs <- 267217.062558
+aggregate_cs_geom <- (1/2)*agg_base_cs*agg_height_cs 
+aggregate_cs
+# = $2365754
+
+```
+######## needed?
+#Create a function for agg demand at the equilibrium point
+#q_aggregategph_equil<- function(q){P_aggb+P_aggm*q - 5}
+#q_aggregategph_equil
+#Find the area under the curve via integrating
+#aggregate_cs <- integrate(q_aggregategph_equil, 0, 267217.062558)
+#aggregate_cs 
+# = 2365754
+######### needed?
+
+###Calculate the produce benefits
+```{r}
+agg_height_ps <- 5
+agg_base_ps <- 267217.062558
+aggregate_ps_geom <- (1/2)*agg_height_ps*agg_base_ps
+aggregate_ps_geom
+# = $668042.7
+```
+
+###Calculate the environmental cost
+```{r}
+ec_height <- 2
+ec_base <- 267217.062558
+ec_geom <- ec_height*ec_base
+ec_geom
+# = $534434.1
+```
+
+##Question 2
+###Determine the distribution of benefits
+```{r}
+# Find q for high income at $5.00
+#ph <- 23.3914418-0.0001297*(q)
+# 5 = 23.3914418-0.0001297*(q)
+q_at_equil_h <- (5-23.3914418)/(-0.0001297)
+q_at_equil_h
+#q = 141799.9
+demand_eq_high(141799.9)
+#4.999995 ~ $5.00 check
+
+#Calculate the high demand at equilibrium
+height_equil_h <- 23.3914418 - 5
+base_equil_h <-141799.9
+cs_equil_h <- (1/2)*height_equil_h*base_equil_h 
+cs_equil_h
+# = $1303952
+
+
+#Find q for low income at $5.00
+#pl <- 21.9908534-0.0001355*q
+#5 = 21.9908534-0.0001355*q
+q_at_equil_l <- (5-21.9908534)/(-0.0001355)
+q_at_equil_l
+
+height_equil_l <- 21.9908534 - 5
+base_equil_l <- 125393.8
+cs_equil_l <- (1/2)*height_equil_l*base_equil_l 
+cs_equil_l
+# =  $1065274
+
+
+# Find the difference in benefits
+benefits_difference = cs_equil_h - cs_equil_l
+benefits_difference
+# = $238678.5
+```
+
+b) High demand consumer benefit at P = 5
+```{r}
 
 ```
 
 
+
+
+
+
+
+
+
+
+
 ```{r, echo=FALSE}
-#Question 2
+
 
 #Create a linear regression
 demand_high_lmt <- lm(Price_Dollars ~ gas_df$Q_High_Gallons_per_Day, data = gas_df)
