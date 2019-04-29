@@ -1,35 +1,34 @@
 ---
-title: "Assignment2"
-author: "Sandra Fogg"
-date: "4/25/2019"
+title: "Appendix"
+author: ""
+date: ""
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo = FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r, include = FALSE}
+```{r, include = FALSE, echo = FALSE, message=FALSE}
 #Load Packages
 library(ggplot2)
 library(tidyverse)
 ```
 
-
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, include = FALSE}
 #Create a data frame
 gas_df <- read_csv("Gas_Data.csv")
 gas_df
 ```
-###Create and graph demand curves, supply curve, and marginal external cost
-```{r, echo=FALSE}
+###Supply, Demand, and Marginal Externality Costs for Gasoline in France
+```{r, echo=FALSE, include=FALSE, message=FALSE, warning = FALSE}
 
 
 #Create demand curve for High and Low
-demand_high <- ggplot(gas_df, aes(x = Q_Low_Gallons_per_Day, y = Price_Dollars)) + 
-  geom_line(color = "#0073D9", size = 1) + 
-  theme_classic() 
-demand_high
+#demand_high <- ggplot(gas_df, aes(x = Q_Low_Gallons_per_Day, y = Price_Dollars)) + 
+ # geom_line(color = "#0073D9", size = 1) + 
+ # theme_classic() 
+#demand_high
 
 
 
@@ -48,6 +47,7 @@ demand_low_lm
 demand_high_lm$coefficients
 bh = demand_high_lm$coefficients[1]
 mh = (demand_high_lm$coefficients[2])
+mh
 
 #High Demand Equation
 #ph = bh - mh(q)
@@ -60,6 +60,7 @@ qhighB <- (bh/-mh) # intercept or b/ - slope or m for high income
 demand_low_lm$coefficients
 bl = demand_low_lm$coefficients[1]
 ml = (demand_low_lm$coefficients[2])
+ml
 
 #Low Demand Equation
 #pl = bl - ml(q)
@@ -98,7 +99,7 @@ q_aggregate <- function(q){P_aggb+P_aggm*q}
 #Find MPC (supply curve) with price, $5.00
 supply<- 5/((5-P_aggb)/P_aggm)
 supply
-supplym 
+
 
 
 
@@ -108,35 +109,71 @@ mec <- function(y) {2}
 
 
 # List out functions
-demand_eq_highgph <- function(q) {23.3914418-0.0001297*q}
-demand_eq_lowgph <- function(q) {21.9908534-0.0001355*q}
+demand_eq_highgph <- function(q) {23.3914418-0.0001296638*q}
+demand_eq_lowgph <- function(q) {21.9908534-0.0001355174*q}
 mpcgph <- function(q) {supply*q}
 mecgph <- function(y) {2}
 q_aggregategph <- function(q){P_aggb+P_aggm*q}
 
 
+```
 
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
 # Graph curves
 opt<- data.frame(x = c(0:267217.1), y = c(5))
 x<- 70000:500000
-demand_gph <- ggplot(data.frame(x = c(70000:400000)), aes(x=x))+
-  stat_function(fun=mpcgph, geom = "line", color ="darkolivegreen3") +
-  stat_function(fun=demand_eq_highgph, geom="line", color ="red3") +
-  stat_function(fun=demand_eq_lowgph, geom="line", color ="goldenrod1") +
-  stat_function(fun=q_aggregategph, geom = "line", color ="darkorange3") +
-  stat_function(fun=mecgph, geom = "line", color ="chartreuse4") +
+demand_gph <- ggplot(data.frame(x = c(70000:400000)), aes(x=x, colour=Function)) +
+  scale_colour_identity("Function", guide="legend")+
+   stat_function(fun=mpcgph, geom = "line", aes(colour ="MPC")) +
+  stat_function(fun=demand_eq_highgph, geom="line", aes(colour ="High Demand")) +
+  stat_function(fun=demand_eq_lowgph, geom="line", aes(colour ="Low Demand")) +
+  stat_function(fun=q_aggregategph, geom = "line", aes(colour ="Agg. Demand")) +
+  stat_function(fun=mecgph, geom = "line", aes(colour ="MEC")) +
   xlab("\nQuantity (Gallons per Day)")+
   ylab("Price ($USD)\n")+
   ggtitle("Gas Market Under the Status Quo \n")+
   scale_y_continuous(limits = c(0,25), expand = c(0,0))+
   scale_x_continuous(limits = c(0,400000), expand = c(0,0), breaks = seq(0, 400000, 50000)) +
-  theme_classic()
+  theme_classic() + scale_colour_manual("Functions", values = c("darkolivegreen3", "darkorange3","goldenrod1","red3","chartreuse4"))
 
 demand_gph
 ```
 
-###Calculate the consumer benefits
-```{r}
+#####Figure 1. The gas market for France was analyzed by determining the high and low income demand curves, the aggregate demand curve, the marginal private cost for gasoline producers, and the marginal external costs derived from impacts to human health and the environment.
+
+####Equations for Figure 1.
+High Income Demand: $P = (23.3914418-0.0001296638(Q))$ 
+
+Low Income Demand: $P = (21.9908534-0.0001355174(Q))$
+
+Aggregate Demand: $P = (22.70661-0.00006626299(Q))$
+
+Marginal Private Cost: $P = (0.00001871138(Q))$
+
+Marginal External Cost: $P = 2.00$
+
+
+###Costs and Benefits at Status Quo
+
+####Equations for Benefits
+
+Surplus General Calculation: $S = (1/2)(P)(Q)$
+
+Aggregate Consumer Surplus: $CS = (1/2)(22.70661 - 5.00)(267217.062558)$ = $2,365,754
+
+High Income Consumer Surplus: $CS = (1/2)(23.3914418 - 5.00)(141799.9)$ = $1,303,952
+
+Low Income Consumer Surplus: $CS = (1/2)(21.9908534 - 5.00)(125393.8)$ = $1,065,274
+
+Producer Surplus: $PS = (1/2)(5.00)(267217.062558)$ = $668,043
+
+####Equations for Costs
+
+TEC General Calculation: $TEC = (MEC)(Q)$
+
+Total Environmental Cost: $TEC = (2.00)(267217.062558)$ = $534,434
+
+```{r, include = FALSE, echo = FALSE, message = FALSE}
 #Determine the aggregate consumer benefit
 
 #Determine the market equilibrium point, when aggregate demand = supply
@@ -154,14 +191,15 @@ q_aggregategph(0)
 agg_height_cs <- 22.70661 - 5
 agg_base_cs <- 267217.062558
 aggregate_cs_geom <- (1/2)*agg_base_cs*agg_height_cs 
-aggregate_cs
+aggregate_cs_geom
 # = $2365754
 
 ```
 
 
-###Calculate the produce benefits
-```{r}
+
+```{r, include = FALSE}
+#Calculate the produce benefits
 agg_height_ps <- 5
 agg_base_ps <- 267217.062558
 aggregate_ps_geom <- (1/2)*agg_height_ps*agg_base_ps
@@ -169,8 +207,9 @@ aggregate_ps_geom
 # = $668042.7
 ```
 
-###Calculate the environmental cost
-```{r}
+
+```{r, include = FALSE}
+#Calculate the environmental cost
 ec_height <- 2
 ec_base <- 267217.062558
 ec_geom <- ec_height*ec_base
@@ -178,9 +217,9 @@ ec_geom
 # = $534434.1
 ```
 
-##Question 2
-###Determine the distribution of benefits
-```{r}
+
+```{r, include = FALSE}
+#Distribution of Benefits
 # Find q for high income at $5.00
 #ph <- 23.3914418-0.0001297*(q)
 # 5 = 23.3914418-0.0001297*(q)
@@ -216,9 +255,36 @@ benefits_difference = 1303952-1065274
 benefits_difference
 # = $238678
 ```
-```{r}
-#Adding a $0.50 tax/gallon
 
+###Costs and Benefits with a $0.50/gallon Tax
+
+####Equations for Benefits
+
+Surplus General Calculation: $S = (1/2)(P)(Q)$
+
+High Income Consumer Surplus: $CS = (1/2)(23.3914418 - 5.3899)(138793.7)$ = $1,249,250
+
+Low Income Consumer Surplus: $CS = (1/2)(21.9908534 - 5.3899)(122516.3)$ = $1,016,944
+
+Producer Surplus: $PS = (1/2)(5.3899-.50)(261333)$ = $638,946
+
+Tax Revenue General Calculation: $R = (Price~with~Tax - Price)(Q)$
+
+Tax Revenue = $R = (5.3899-4.8899)(261333)$ = $130,667
+
+####Equations for Costs
+
+Marginal Private Cost: $P = 0.50 + 00001871138(Q)$
+
+TEC General Calculation: $TEC = (MEC)(Q)$
+
+Total Environmental Cost: $TEC = (2.00)(261333)$ = $522,666
+
+
+
+
+
+```{r, include = FALSE, echo = FALSE, message = FALSE}
 #MPC (supply) curve changes
 #Originial -> MPC = 1.871138e-05*q
 #New -> MPC = 1.871138e-05*q+ 0.50
@@ -228,7 +294,6 @@ mpc_tax <- function(q) {1.871138e-05*q+ 0.50}
 #Find the new market equilibrium point
 # Set new supply to demand
 
-q_agg_tax <- ((Q_aggb/Q_aggm)-0.50)/((1/Q_aggm)+.00001871138)
 q_agg_tax <- (P_aggb-0.50)/(supply+-P_aggm)
 q_agg_tax
 # = 261333 gallons (261333.0349 w/ calculator)
@@ -266,11 +331,11 @@ cs_tax_l
 # = $1016944
 
 #Calculate the producer surplus at new price
-agg_height_ps_tax <- 5.3899
+agg_height_ps_tax <- 5.3899-.50
 agg_base_ps_tax <- 261333
 aggregate_ps_geom_tax <- (1/2)*agg_height_ps_tax*agg_base_ps_tax
 aggregate_ps_geom_tax
-# = $704279.5
+# = $638946.1
 
 #Calculate the environmental cost with the new tax
 tec_tax <- (2*261333)
@@ -281,6 +346,7 @@ tec_tax
 #Calculate the price with new quantity at tax
 rev_price <- mpcgph(q_agg_tax)
 rev_price
+#4.8899
 
 #Calculate the revenue
 rev_tax <- q_agg_tax*(p_agg_tax-rev_price)
@@ -291,130 +357,42 @@ rev_tax
 
 
 
+Question 4:
+```{r}
+#Tax Revenue to repair infrastructure
 
+#Create a vector for possible taxes
+taxes <- seq(0.25, 5, by = 0.25)
 
+#Create a new supply curve with possible taxes
+mpc_mtaxes <- function(q) {supply + taxes}
+mpc_mtaxes()
 
+price_sq <- 5 
 
+#Create a function to determine the quantity at equilibrium for multiple taxes 
 
+q_mtaxes <- (P_aggb-taxes)/(supply+-P_aggm)
+q_mtaxes
 
+#Find consumerprices at multiple taxes with a function
 
+p_mtaxes <- q_aggregategph(q_mtaxes)
+p_mtaxes
 
+#Find producer costs at multiple taxes with a function
+p_mpc_mtaxes <- mpcgph(q_mtaxes)
 
+#Find environmental costs at multiple taxes
+tec_mtaxes <- (2*q_mtaxes)
 
+#Find producer revenues at multiple taxes
 
+rev_price_mtaxes <- mpcgph(q_agg_tax)
+rev_price_mtaxes
 
+rev_mtaxes <- q_mtaxes*(p_mtaxes-price_sq)
+rev_mtaxes 
 
-
-
-
-
-
-
-
-
-
-
-
-```{r, echo=FALSE}
-
-
-#Create a linear regression
-demand_high_lmt <- lm(Price_Dollars ~ gas_df$Q_High_Gallons_per_Day, data = gas_df)
-demand_high_lmt
-
-demand_low_lmt <- lm(Price_Dollars ~ gas_df$Q_Low_Gallons_per_Day, data = gas_df)
-demand_low_lmt
-
-
-
-#Set Coefficients
-
-#High Demand Coefficients
-demand_high_lm$coefficients
-bht = demand_high_lmt$coefficients[1]
-mht = (demand_high_lmt$coefficients[2])
-
-#High Demand Equation
-#ph = bh - mh(q)
-#ph = 23.3914418-0.0001297(q)
-
-qhighAt <- (1/mht) # 1/slope or m for high income
-qhighBt <- (bht/-mht) # intercept or b/ - slope or m for high income
-
-#Low Demand Coefficients
-demand_low_lmt$coefficients
-blt = demand_low_lmt$coefficients[1]
-mlt = (demand_low_lmt$coefficients[2])
-
-#Low Demand Equation
-#pl = bl - ml(q)
-#pl = 21.9908534-0.0001355(q)
-
-qlowAt <- (1/mlt) # 1/slope or m for low income
-qlowBt <- (blt/-mht) # intercept or b/ - slope or m for low income
-
-
-
-#Make Demand Curves
-demand_eq_hight <- function(q) {23.3914418-0.0001297*q}
-demand_eq_lowt <- function(q) {21.9908534-0.0001355*q}
-
-
-
-#Find aggregate demands separately for quantity
-Q_aggbt<- qlowBt + qhighBt # aggregate for intercept
-Q_aggmt<- qlowAt + qhighAt # aggregate for slope
-
-
-
-#Find aggregate demand separately for price
-P_aggbt<- -Q_aggbt/Q_aggmt # aggregate for intercept
-P_aggmt<- 1/Q_aggmt # aggregate for slope
-
-
-
-# Find aggregate demand curve
-q_aggregatet <- function(q){P_aggbt+P_aggm*qt}
-
-
-
-#Find MPC (supply curve) by plugging in 5 for the aggregate demand curve
-supplyt<- 5.50/((5.50-P_aggbt)/P_aggmt)
-supplyt
-
-
-
-# Find marginal external cost
-mect <- function(y) {2}
-
-
-
-# List out functions
-demand_eq_highgpht <- function(q) {23.3914418-0.0001297*q}
-demand_eq_lowgpht <- function(q) {21.9908534-0.0001355*q}
-mpcgpht <- function(q) {supplyt*q}
-mecgpht <- function(y) {2}
-q_aggregategpht <- function(q){P_aggbt+P_aggmt*q}
-
-
-
-# Set up data frame to optimum point
-opt<- data.frame(x = c(0:267217.1), y = c(5))
-x<- 70000:500000
-demand_gpht <- ggplot(data.frame(x = c(70000:400000)), aes(x=x))+
-  stat_function(fun=mpcgpht, geom = "line", color ="darkolivegreen3") +
-  stat_function(fun=demand_eq_highgpht, geom="line", color ="red3") +
-  stat_function(fun=demand_eq_lowgpht, geom="line", color ="goldenrod1") +
-  stat_function(fun=q_aggregategpht, geom = "line", color ="darkorange3") +
-  stat_function(fun=mecgpht, geom = "line", color ="chartreuse4") +
-  xlab("\nQuantity (Gallons per Day)")+
-  ylab("Price ($USD)\n")+
-  ggtitle("Gas Market Under with a $0.50 Tax \n")+
-  scale_y_continuous(limits = c(0,25), expand = c(0,0))+
-  scale_x_continuous(limits = c(0,400000), expand = c(0,0), breaks = seq(0, 400000, 50000)) +
-  theme_classic()
-
-demand_gpht
 
 ```
-
