@@ -87,7 +87,7 @@ P_aggb<- -Q_aggb/Q_aggm # aggregate for intercept
 P_aggb
 P_aggm<- 1/Q_aggm # aggregate for slope
 P_aggm
-
+p_aggregate <- function(p) {(P_aggb+P_aggm*p)}
 
 
 # Find aggregate demand curve
@@ -98,6 +98,7 @@ q_aggregate <- function(q){P_aggb+P_aggm*q}
 #Find MPC (supply curve) with price, $5.00
 supply<- 5/((5-P_aggb)/P_aggm)
 supply
+supplym 
 
 
 
@@ -157,15 +158,7 @@ aggregate_cs
 # = $2365754
 
 ```
-######## needed?
-#Create a function for agg demand at the equilibrium point
-#q_aggregategph_equil<- function(q){P_aggb+P_aggm*q - 5}
-#q_aggregategph_equil
-#Find the area under the curve via integrating
-#aggregate_cs <- integrate(q_aggregategph_equil, 0, 267217.062558)
-#aggregate_cs 
-# = 2365754
-######### needed?
+
 
 ###Calculate the produce benefits
 ```{r}
@@ -219,15 +212,98 @@ cs_equil_l
 
 
 # Find the difference in benefits
-benefits_difference = cs_equil_h - cs_equil_l
+benefits_difference = 1303952-1065274
 benefits_difference
-# = $238678.5
+# = $238678
 ```
-
-b) High demand consumer benefit at P = 5
 ```{r}
+#Adding a $0.50 tax/gallon
+
+#MPC (supply) curve changes
+#Originial -> MPC = 1.871138e-05*q
+#New -> MPC = 1.871138e-05*q+ 0.50
+
+mpc_tax <- function(q) {1.871138e-05*q+ 0.50}
+
+#Find the new market equilibrium point
+# Set new supply to demand
+
+q_agg_tax <- ((Q_aggb/Q_aggm)-0.50)/((1/Q_aggm)+.00001871138)
+q_agg_tax <- (P_aggb-0.50)/(supply+-P_aggm)
+q_agg_tax
+# = 261333 gallons (261333.0349 w/ calculator)
+
+#Find the new price at the equilibrium point
+#q_aggregategph <- function(q){P_aggb+P_aggm*q}
+p_agg_tax <- q_aggregategph(q_agg_tax)
+p_agg_tax 
+# = $5.3899
+
+
+#Find the consumer surplus for high income
+q_at_tax_h <- (5.3899-23.3914418)/(-0.0001297)
+q_at_tax_h
+#q = 138793.7
+demand_eq_high(q_at_tax_h)
+
+#Calculate the high demand CS at new price
+height_tax_h <- 23.3914418 - 5.3899
+base_tax_h <- 138793.7
+cs_tax_h <- (1/2)*height_tax_h*base_tax_h 
+cs_tax_h
+# = $1249250
+
+#Find the consumer surplus for low income
+q_at_tax_l <- (5.3899-21.9908534)/(-0.0001355)
+q_at_tax_l
+#q = 122516.3
+
+#Calculate the low demand CS at new price
+height_tax_l <- 21.9908534 - 5.3899
+base_tax_l <- 122516.3
+cs_tax_l <- (1/2)*height_tax_l*base_tax_l
+cs_tax_l
+# = $1016944
+
+#Calculate the producer surplus at new price
+agg_height_ps_tax <- 5.3899
+agg_base_ps_tax <- 261333
+aggregate_ps_geom_tax <- (1/2)*agg_height_ps_tax*agg_base_ps_tax
+aggregate_ps_geom_tax
+# = $704279.5
+
+#Calculate the environmental cost with the new tax
+tec_tax <- (2*261333)
+tec_tax
+# = $522666
+
+#Calculate the total revenue with the tax
+#Calculate the price with new quantity at tax
+rev_price <- mpcgph(q_agg_tax)
+rev_price
+
+#Calculate the revenue
+rev_tax <- q_agg_tax*(p_agg_tax-rev_price)
+rev_tax
+# = $130666.5 
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
