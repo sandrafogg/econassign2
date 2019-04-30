@@ -469,3 +469,50 @@ taxes_table <- kable(tax_scenarios,
 taxes_table
 ```
 
+```{r}
+#Cut original demand curve in half for electric vehicles
+
+#Cut the demand intercepts in half for high and low income
+demand_eq_highgph <- function(q) {23.3914418-0.0001296638*q}
+demand_eq_lowgph <- function(q) {21.9908534-0.0001355174*q}
+
+#Cut the high income
+new_int_h <- (23.3914418/2)
+new_int_h
+demand_high_half <- function(q) {11.69572-0.0001296638*q}
+
+#Cut the low income
+new_int_l <- (21.9908534/2)
+new_int_l
+demand_low_half <- function(q) {10.99543-0.0001355174*q}
+
+
+#Find new surpluses at $5.00 but half the demand for high
+q_at_half_h <- (5-11.69572)/(-0.0001296638)
+q_at_half_h
+demand_high_half(51639.09)
+
+
+#Calculate the high demand at equilibrium
+height_half_h <- 11.69572 - 5
+base_half_h <- 51639.09
+cs_half_h <- (1/2)*height_half_h*base_half_h 
+cs_half_h
+# 172880.4
+
+
+#Find new surpluses at $5.00 but half the demand for low
+q_at_half_l <- (5-10.99543)/(-0.0001296638)
+q_at_half_l
+demand_low_half(46238.27)
+
+
+#Calculate the high demand at equilibrium
+height_half_l <- 10.99543 - 5
+base_half_l <- 46238.27
+cs_half_l <- (1/2)*height_half_l*base_half_l
+cs_half_l
+# 138609.2
+
+```
+
