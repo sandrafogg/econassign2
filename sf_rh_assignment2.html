@@ -345,167 +345,32 @@ Producer Surplus
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>#Cut original demand curve in half for electric vehicles
-
-#Cut the demand intercepts in half for high and low income
-demand_eq_highgph &lt;- function(q) {23.3914418-0.0001296638*q}
-demand_eq_lowgph &lt;- function(q) {21.9908534-0.0001355174*q}
-
-#Cut the high income
-new_int_h &lt;- (23.3914418/2)
-new_int_h</code></pre>
-<pre><code>## [1] 11.69572</code></pre>
-<pre class="r"><code>demand_high_half &lt;- function(q) {11.69572-0.0001296638*q}
-
-#Cut the low income
-new_int_l &lt;- (21.9908534/2)
-new_int_l</code></pre>
-<pre><code>## [1] 10.99543</code></pre>
-<pre class="r"><code>demand_low_half &lt;- function(q) {10.99543-0.0001355174*q}
-
-
-#Find new surpluses at $5.00 but half the demand for high
-q_at_half_h &lt;- (5-11.69572)/(-0.0001296638)
-q_at_half_h</code></pre>
-<pre><code>## [1] 51639.09</code></pre>
-<pre class="r"><code>demand_high_half(51639.09)</code></pre>
-<pre><code>## [1] 4.999999</code></pre>
-<pre class="r"><code>#Calculate the high demand at equilibrium
-height_half_h &lt;- 11.69572 - 5
-base_half_h &lt;- 51639.09
-cs_half_h &lt;- (1/2)*height_half_h*base_half_h 
-cs_half_h</code></pre>
-<pre><code>## [1] 172880.4</code></pre>
-<pre class="r"><code># 172880.4
-
-
-#Find new surpluses at $5.00 but half the demand for low
-q_at_half_l &lt;- (5-10.99543)/(-0.0001296638)
-q_at_half_l</code></pre>
-<pre><code>## [1] 46238.27</code></pre>
-<pre class="r"><code>demand_low_half(46238.27)</code></pre>
-<pre><code>## [1] 4.72934</code></pre>
-<pre class="r"><code>#Calculate the high demand at equilibrium
-height_half_l &lt;- 10.99543 - 5
-base_half_l &lt;- 46238.27
-cs_half_l &lt;- (1/2)*height_half_l*base_half_l
-cs_half_l</code></pre>
-<pre><code>## [1] 138609.2</code></pre>
-<pre class="r"><code># 138609.2
-
-#Find quanity of aggregate 
-q_agg_half &lt;- base_half_h + base_half_l
-q_agg_half</code></pre>
-<pre><code>## [1] 97877.36</code></pre>
-<pre class="r"><code>#Find total environmental cost
-tec_half &lt;- (2*q_agg_half)
-tec_half</code></pre>
-<pre><code>## [1] 195754.7</code></pre>
-<pre class="r"><code>#195754.7</code></pre>
-<pre class="r"><code>#MPC (supply) curve changes
-#Originial -&gt; MPC = 1.871138e-05*q
-#New -&gt; MPC = 1.871138e-05*q+ 2.00
-
-mpc_tax_2 &lt;- function(q) {1.871138e-05*q+ 2.00}
-
-#Find the new market equilibrium point
-# Set new supply to demand
-
-q_agg_tax2 &lt;- (P_aggb-2.00)/(supply+-P_aggm)
-q_agg_tax2</code></pre>
-<pre><code>## (Intercept) 
-##    243680.6</code></pre>
-<pre class="r"><code># 243680.6 
-
-
-#Find the new price at the equilibrium point
-#q_aggregategph &lt;- function(q){P_aggb+P_aggm*q}
-p_agg_tax2 &lt;- q_aggregategph(q_agg_tax2)
-p_agg_tax2</code></pre>
-<pre><code>## (Intercept) 
-##      6.5596</code></pre>
-<pre class="r"><code># $ 6.5596
-
-
-#Find the consumer surplus for high income
-q_at_tax_h2 &lt;- (6.5596-23.3914418)/(-0.0001297)
-q_at_tax_h2</code></pre>
-<pre><code>## [1] 129775.2</code></pre>
-<pre class="r"><code># 129775.2
-
-demand_eq_high(q_at_tax_h2)</code></pre>
-<pre><code>## [1] 6.5596</code></pre>
-<pre class="r"><code>#Calculate the high demand CS at new price
-height_tax_h2 &lt;- 23.3914418 - 6.5596
-base_tax_h2 &lt;- 129775.2
-cs_tax_h2 &lt;- (1/2)*height_tax_h2*base_tax_h2 
-cs_tax_h2</code></pre>
-<pre><code>## [1] 1092178</code></pre>
-<pre class="r"><code># $1092178
-
-#Find the consumer surplus for low income
-q_at_tax_l2 &lt;- (6.5596-21.9908534)/(-0.0001355)
-q_at_tax_l2</code></pre>
-<pre><code>## [1] 113883.8</code></pre>
-<pre class="r"><code># 113883.8
-
-#Calculate the low demand CS at new price
-height_tax_l2 &lt;- 21.9908534 - 6.5596
-base_tax_l2 &lt;- 113883.8
-cs_tax_l2 &lt;- (1/2)*height_tax_l2*base_tax_l2
-cs_tax_l2</code></pre>
-<pre><code>## [1] 878684.9</code></pre>
-<pre class="r"><code># = $878684.9
-
-#Calculate the producer surplus at new price
-agg_height_ps_tax2 &lt;- 6.5596-2.00
-agg_base_ps_tax2 &lt;-  243680.6 
-aggregate_ps_geom_tax2 &lt;- (1/2)*agg_height_ps_tax2*agg_base_ps_tax2
-aggregate_ps_geom_tax2</code></pre>
-<pre><code>## [1] 555543</code></pre>
-<pre class="r"><code># = $555543
-
-#Calculate the environmental cost with the new tax
-tec_tax2 &lt;- (2*243680.6)
-tec_tax2</code></pre>
-<pre><code>## [1] 487361.2</code></pre>
-<pre class="r"><code># = $487361.2</code></pre>
-<p>``` #Find the new aggregate demand curve to find the total environmental cost demand_high_half<span class="math inline">\(coefficients bhh = (demand_high_half\)</span>coefficients[1]) bh mhh = (demand_high_half$coefficients[2]) mh</p>
-<p>qhighA_half &lt;- (1/mhh) # 1/slope or m for high income qhighB_half &lt;- (bhh/-mhh) # intercept or b/ - slope or m for high income</p>
 </div>
 </div>
-<div id="low-demand-coefficients" class="section level1">
-<h1>Low Demand Coefficients</h1>
-<p>demand_low_half<span class="math inline">\(coefficients blh = demand_low_half\)</span>coefficients[1] mlh = (demand_low_half$coefficients[2]) ml</p>
-<p>qlowA_half &lt;- (1/mlh) # 1/slope or m for low income qlowB_half &lt;- (blh/-mlh) # intercept or b/ - slope or m for low income</p>
+<div id="v.-costs-and-benefits-with-the-introduction-of-electric-vehicles" class="section level3">
+<h3>V. Costs and Benefits with the Introduction of Electric Vehicles</h3>
+<p>High Income Demand: <span class="math inline">\(P = (11.69572-0.0001296638(Q))\)</span></p>
+<p>Low Income Demand: <span class="math inline">\(P = (10.99543-0.0001355174(Q))\)</span></p>
+<p>Price: <span class="math inline">\(P = (11.3533-00006626299(Q))\)</span> = $4.87</p>
+<div id="equations-for-benefits-3" class="section level4">
+<h4>Equations for Benefits</h4>
+<p>Surplus General Calculation: <span class="math inline">\(S = (1/2)(P)(Q)\)</span></p>
+<p>High Income Consumer Surplus: <span class="math inline">\(CS = (1/2)(11.69572 - 4.87)(51639.09)\)</span> = $176,237</p>
+<p>Low Income Consumer Surplus: <span class="math inline">\(CS = (1/2)(10.99543 - 4.87)(46238.27)\)</span> = $141,615</p>
 </div>
-<div id="find-aggregate-demands-separately-for-quantity" class="section level1">
-<h1>Find aggregate demands separately for quantity</h1>
-<p>Q_aggb_half&lt;- qlowB_half + qhighB_half # aggregate for intercept Q_aggm_half&lt;- qlowA_half + qhighA_half # aggregate for slope</p>
+<div id="equations-for-costs-3" class="section level4">
+<h4>Equations for Costs</h4>
+<p>TEC General Calculation: <span class="math inline">\(TEC = (MEC)(Q)\)</span></p>
+<p>Total Environmental Cost: <span class="math inline">\(TEC = (2.00)(97877.36)\)</span> = $195,755</p>
 </div>
-<div id="find-aggregate-demand-separately-for-price" class="section level1">
-<h1>Find aggregate demand separately for price</h1>
-<p>P_aggb_half&lt;- -Q_aggb_half/Q_aggm_half # aggregate for intercept P_aggb_half P_aggm_half&lt;- 1/Q_aggm_half # aggregate for slope P_aggm_half p_aggregate_half &lt;- function(p) {(P_aggb_half+P_aggm_half*p)}</p>
 </div>
-<div id="find-aggregate-demand-curve" class="section level1">
-<h1>Find aggregate demand curve</h1>
-<p>q_aggregate_half &lt;- function(q){P_aggb_half+P_aggm_half*q}</p>
-<p>q_aggregate_half<span class="math inline">\(coefficient[1] q_aggregate_half\)</span>coefficient[2]</p>
-<p>highA_half &lt;- (1/0.0001296638) # 1/slope or m for high income qhighB_half &lt;- (11.69572/-0.0001296638) # intercept or b/ - slope or m for high income</p>
-<p>qlowA_half &lt;- (1/0.0001355174) # 1/slope or m for low income qlowB_half &lt;- (10.99543/-0.0001355174) # intercept or b/ - slope or m for low income</p>
+<div id="vi.-costs-and-benefits-of-gasoline-with-a-2.00-tax" class="section level3">
+<h3>VI. Costs and Benefits of Gasoline with a $2.00 Tax</h3>
+<div id="equations-for-costs-4" class="section level4">
+<h4>Equations for Costs</h4>
+<p>TEC General Calculation: <span class="math inline">\(TEC = (MEC)(Q)\)</span></p>
+<p>Total Environmental Cost: <span class="math inline">\(TEC = (2.00)(243680.6)\)</span> = $487,361</p>
 </div>
-<div id="find-aggregate-demands-separately-for-quantity-1" class="section level1">
-<h1>Find aggregate demands separately for quantity</h1>
-<p>Q_aggb_half&lt;- qlowB_half + qhighB_half # aggregate for intercept Q_aggm_half&lt;- qlowA_half + qhighA_half # aggregate for slope</p>
-</div>
-<div id="find-aggregate-demand-separately-for-price-1" class="section level1">
-<h1>Find aggregate demand separately for price</h1>
-<p>P_aggb_half&lt;- -Q_aggb_half/Q_aggm_half # aggregate for intercept P_aggb_half P_aggm_half&lt;- 1/Q_aggm_half # aggregate for slope P_aggm_half p_aggregate_half &lt;- function(p) {(P_aggb_half+P_aggm_half*p)} p_aggregate_half(5)</p>
-</div>
-<div id="find-aggregate-demand-curve-1" class="section level1">
-<h1>Find aggregate demand curve</h1>
-<p>q_aggregate_half &lt;- function(q){P_aggb_half+P_aggm_half*q}</p>
-<p>q_aggregate_half(11.35364)</p>
 </div>
 
 

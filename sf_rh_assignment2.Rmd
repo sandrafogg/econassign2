@@ -475,8 +475,29 @@ taxes_table <- kable(tax_scenarios,
   kable_styling(bootstrap_options = c("striped", "condensed", "centered"))
 taxes_table
 ```
+###V. Costs and Benefits with the Introduction of Electric Vehicles
 
-```{r}
+High Income Demand: $P = (11.69572-0.0001296638(Q))$ 
+
+Low Income Demand: $P = (10.99543-0.0001355174(Q))$
+
+Price: $P = (11.3533-00006626299(Q))$ = $4.87
+
+####Equations for Benefits
+
+Surplus General Calculation: $S = (1/2)(P)(Q)$
+
+High Income Consumer Surplus: $CS = (1/2)(11.69572 - 4.87)(51639.09)$ = $176,237
+
+Low Income Consumer Surplus: $CS = (1/2)(10.99543 - 4.87)(46238.27)$ = $141,615
+
+####Equations for Costs
+
+TEC General Calculation: $TEC = (MEC)(Q)$
+
+Total Environmental Cost: $TEC = (2.00)(97877.36)$ = $195,755
+
+```{r, include = FALSE}
 #Cut original demand curve in half for electric vehicles
 
 #Cut the demand intercepts in half for high and low income
@@ -495,13 +516,13 @@ demand_low_half <- function(q) {10.99543-0.0001355174*q}
 
 
 #Find new surpluses at $5.00 but half the demand for high
-q_at_half_h <- (5-11.69572)/(-0.0001296638)
+q_at_half_h <- (4.87-11.69572)/(-0.0001296638)
 q_at_half_h
 demand_high_half(51639.09)
 
 
 #Calculate the high demand at equilibrium
-height_half_h <- 11.69572 - 5
+height_half_h <- 11.69572 - 4.87
 base_half_h <- 51639.09
 cs_half_h <- (1/2)*height_half_h*base_half_h 
 cs_half_h
@@ -509,17 +530,17 @@ cs_half_h
 
 
 #Find new surpluses at $5.00 but half the demand for low
-q_at_half_l <- (5-10.99543)/(-0.0001296638)
+q_at_half_l <- (4.87-10.99543)/(-0.0001296638)
 q_at_half_l
 demand_low_half(46238.27)
 
 
 #Calculate the high demand at equilibrium
-height_half_l <- 10.99543 - 5
+height_half_l <- 10.99543 - 4.87
 base_half_l <- 46238.27
 cs_half_l <- (1/2)*height_half_l*base_half_l
 cs_half_l
-# 138609.2
+# 141614.6
 
 #Find quanity of aggregate 
 q_agg_half <- base_half_h + base_half_l
@@ -530,12 +551,44 @@ tec_half <- (2*q_agg_half)
 tec_half
 #195754.7
 
+
+qlowA_half <- (1/ml) # 1/slope or m for low income
+qlowB_half <- ((bl/2)/-ml) # intercept or b/ - slope or m for low income
+
+qhighA_half <- (1/mh) # 1/slope or m for low income
+qhighB_half <- ((bh/2)/-mh) # intercept or b/ - slope or m for low income
+
+
+
+#Find aggregate demands separately for quantity
+Q_aggb_half<- qlowB_half + qhighB_half # aggregate for intercept
+Q_aggm_half<- qlowA_half + qhighA_half # aggregate for slope
+
+
+
+#Find aggregate demand separately for price
+P_aggb_half<- -Q_aggb_half/Q_aggm_half # aggregate for intercept
+P_aggb_half
+P_aggm_half<- 1/Q_aggm_half # aggregate for slope
+P_aggm_half
+p_aggregate_half <- function(p) {(P_aggb_half+P_aggm_half*p)}
+
+
+# Find aggregate demand curve
+q_aggregate_half <- function(q){P_aggb_half+P_aggm_half*q}
+q_aggregate_half(97877.36)
+
 ```
+###VI. Costs and Benefits of Gasoline with a $2.00 Tax
+
+####Equations for Costs
+
+TEC General Calculation: $TEC = (MEC)(Q)$
+
+Total Environmental Cost: $TEC = (2.00)(243680.6)$ = $487,361
 
 
-
-
-```{r}
+```{r, include=FALSE}
 #MPC (supply) curve changes
 #Originial -> MPC = 1.871138e-05*q
 #New -> MPC = 1.871138e-05*q+ 2.00
