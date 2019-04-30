@@ -20,7 +20,7 @@ library(tidyverse)
 gas_df <- read_csv("Gas_Data.csv")
 gas_df
 ```
-###Supply, Demand, and Marginal Externality Costs for Gasoline in France
+###I. Supply, Demand, and Marginal Externality Costs for Gasoline in France
 ```{r, echo=FALSE, include=FALSE, message=FALSE, warning = FALSE}
 
 
@@ -46,6 +46,7 @@ demand_low_lm
 #High Demand Coefficients
 demand_high_lm$coefficients
 bh = demand_high_lm$coefficients[1]
+bh
 mh = (demand_high_lm$coefficients[2])
 mh
 
@@ -153,7 +154,7 @@ Marginal Private Cost: $P = (0.00001871138(Q))$
 Marginal External Cost: $P = 2.00$
 
 
-###Costs and Benefits at Status Quo
+###II. Costs and Benefits at Status Quo
 
 ####Equations for Benefits
 
@@ -256,7 +257,7 @@ benefits_difference
 # = $238678
 ```
 
-###Costs and Benefits with a $0.50/gallon Tax
+###III. Costs and Benefits with a $0.50/gallon Tax
 
 ####Equations for Benefits
 
@@ -357,12 +358,13 @@ rev_tax
 
 
 
-Question 4:
-```{r}
+
+```{r, include= FALSE, messages = FALSE, echo = FALSE, warning = FALSE}
 #Tax Revenue to repair infrastructure
 
 #Create a vector for possible taxes
-taxes <- seq(0.25, 5, by = 0.25)
+taxes <- seq(0.50, 5, by = 0.50)
+taxes
 
 #Create a new supply curve with possible taxes
 mpc_mtaxes <- function(q) {supply + taxes}
@@ -381,7 +383,8 @@ p_mtaxes <- q_aggregategph(q_mtaxes)
 p_mtaxes
 
 #Find producer costs at multiple taxes with a function
-p_mpc_mtaxes <- mpcgph(q_mtaxes)
+p_mpc_mtaxes <- mpc_tax(q_mtaxes)
+p_mpc_mtaxes
 
 #Find environmental costs at multiple taxes
 tec_mtaxes <- (2*q_mtaxes)
@@ -391,8 +394,78 @@ tec_mtaxes <- (2*q_mtaxes)
 rev_price_mtaxes <- mpcgph(q_agg_tax)
 rev_price_mtaxes
 
-rev_mtaxes <- q_mtaxes*(p_mtaxes-price_sq)
+rev_mtaxes <- (p_mtaxes-price_sq)*q_mtaxes
 rev_mtaxes 
 
-
+#Find revenue for consumers
+rev_con <- (p_mtaxes-price_sq) * q_mtaxes
 ```
+
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE, include = FALSE}
+
+#Find the consumer surplus for high income these taxes
+
+q_highd <- function(p) {(bh/-mh)-(p/-mh)}
+q_high_mtaxes <- q_highd(p_mtaxes)
+q_high_mtaxes
+
+area_h_mtaxes <- function(q) {integrate(demand_eq_highgph, lower = 0, upper = q)$value}
+
+# Use sapply() to integrate to the quantity at each value of the tax:
+high_areas_mtaxes <- sapply(q_high_mtaxes, area_h_mtaxes)
+# Cost
+cost_high_mtaxes <- q_high_mtaxes * p_mtaxes
+# Calculate CS:
+cs_high_mtaxes <- (high_areas_mtaxes - cost_high_mtaxes) + rev_con
+cs_high_mtaxes
+
+
+
+#Find the consumer surplus for low income these taxes
+
+q_lowd <- function(p) {(bl/-ml)-(p/-ml)}
+q_low_mtaxes <- q_lowd(p_mtaxes)
+q_low_mtaxes
+
+area_l_mtaxes <- function(q) {integrate(demand_eq_lowgph, lower = 0, upper = q)$value}
+
+# Use sapply() to integrate to the quantity at each value of the tax:
+low_areas_mtaxes <- sapply(q_low_mtaxes, area_l_mtaxes)
+# Cost
+cost_low_mtaxes <- q_low_mtaxes * p_mtaxes
+# Calculate CS:
+cs_low_mtaxes <- (low_areas_mtaxes - cost_low_mtaxes) + rev_con - tec_mtaxes
+cs_low_mtaxes
+
+
+#Find the Producer Surplus
+
+ #PS = [(price with tax * quantity with tax) - area under curve of MPC+tax through quantity with tax] + Revenue [(price at equilibrium - price of MPC using quantity with tax)*quantity with tax]
+# Define the integration function:
+
+area_p_mtaxes <- function(q){integrate(mpcgph, lower = 0, upper = q)$value}
+# Use sapply() to integrate to the quantity at each value of the tax:
+prod_areas <- sapply(q_mtaxes, area_p_mtaxes)
+
+# Cost using the original supply curve and price at MPC
+cost_mtaxes <- q_mtaxes * p_mpc_mtaxes 
+cost_mtaxes
+#Calculate PS:
+ps_mtaxes<- (cost_mtaxes - prod_areas) + rev_mtaxes
+ps_mtaxes
+
+library(kableExtra)
+# Bind Amt of tax, CS high, CS low, and PS into a dataframe for graphing:
+tax_scenarios <- as.data.frame(cbind(taxes, cs_high_mtaxes, cs_low_mtaxes, ps_mtaxes))
+tax_scenarios
+```
+
+```{r, echo=FALSE}
+# Create a table 
+taxes_table <- kable(tax_scenarios,
+                     col.names = c("Potential Tax", "High Income Consumer Surplus", "Low Income Consumer Surplus", "Producer Surplus"), align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "condensed", "centered"))
+taxes_table
+```
+
